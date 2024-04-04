@@ -118,14 +118,14 @@ autoToggleBtn.on('click', () => {
 const body = d3.select('body');
 
 // Adding svg
-const zoom = d3.zoom().scaleExtent([1, 80]).on('zoom', zoomed);
+const zoom = d3.zoom().scaleExtent([1, 80]).on('zoom', zoomed).filter(() => d3.event.shiftKey && d3.event.type === "wheel" || (d3.event.type !== "wheel" ))
 const height = 800;
 const svg = d3
   .select('#map-container')
   .append('svg')
   .attr('width', '100%')
   .attr('height', height)
-  .call(zoom);
+  .call(zoom)
 const detail1 = d3
     .select('#detail1')
     .append('svg')
@@ -362,7 +362,6 @@ const countryTip = d3
 // Create world map
 d3.json('./data/processed_data/world_map.json').then((data) => {
   let countries_shape = data.features;
-  console.log(data)
 
   map
     .selectAll('path')
