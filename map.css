@@ -1,0 +1,237 @@
+body {
+  background-color: #111;
+  color: rgb(225, 225, 225);
+  font-family: sans-serif;
+}
+
+h1,h2,h3,h4,h5,h5 {
+  font-family: monospace;
+  text-align: center;
+}
+
+#description {
+  text-align: center;
+  max-width: 80%;
+}
+
+#map-container {
+  position: relative;
+  margin-bottom: 50px;
+}
+
+#search-container {
+  position: absolute;
+  top: 0;
+  left: 25%;
+  padding: 0 10px;
+  width: 75%;
+}
+
+#country-search {
+  width: 100%;
+  color: white;
+  background: rgba(100,100,100,0.4);
+  backdrop-filter: blur(10px);
+  padding: 5px;
+  outline: none;
+  border: none;
+}
+
+#country-search > option {
+  background-color: black;
+}
+
+#map-controls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 20px;
+  width: 25%;
+  height: 100%;
+  background: rgba(100,100,100,0.4);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+}
+
+.control-group {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+#color-range {
+  width: calc(100% + 40px);
+  margin-left: -20px;
+}
+
+#detail-migration {
+  width: 100%;
+  flex-grow: 1;
+  display: grid;
+  grid-template-rows: 50% 50%;
+  gap: 10px;
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 160px;
+  overflow-y: scroll;
+  background-color: #000;
+}
+
+#buttons {
+  margin-bottom: 20px;
+}
+
+#slider-container {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: rgba(0,0,0,0.3);
+  padding: 5px 10px 5px 10px;
+  border: 2px solid #aaa;
+  display: flex;
+  gap: 10px;
+  max-width: 300px;
+}
+
+.button {
+  color: #aaa;
+  font-size: 12px;
+  font-weight: 600;
+  width:max-content;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: rgba(0,0,0,0.3);
+  padding: 5px 10px 5px 10px;
+  border: 2px solid #aaa;
+  display: inline-block;
+  transition: all 0.4s ease 0s;
+}
+
+.button:hover, .button.active {
+  text-decoration: none;
+  cursor: pointer;
+  color: #000;
+  background: #fff;
+  border-color: #fff;
+  transition: all 0.2s ease-in-out;
+}
+
+.button:link {
+  text-decoration: none;
+}
+
+.container {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding-top: 5px;
+}
+
+.container-content {
+  margin: 0 auto;
+  color: #ffffff;
+}
+
+#source {
+  margin: 10px;
+  color: #ffffff;
+}
+
+#detail1 text {
+  font-size: 15px;
+}
+
+#detail1-title {
+  text-align: center;
+}
+
+#source-link {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+#source-link:hover {
+  color: #ffffff;
+}
+
+footer {
+  padding: 20px 30px;
+}
+
+.searchBoxElement{
+  padding: 5px;
+  position: absolute;
+  max-height: 114px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  line-height: 23px;
+  list-style: none;
+  z-index: 1;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.searchBoxElement span{
+  padding: 0 5px;
+}
+
+.searchBoxElement::-webkit-scrollbar {
+  display:none;
+}
+
+.searchBoxElement li{
+  background-color: rgba(100,100,100,0.4);
+  backdrop-filter: blur(10px);
+  color: white;
+}
+
+.searchBoxElement li:hover{
+  background-color: #004ba7;
+  color: white;
+}
+
+.searchBoxElement li.selected{
+  background-color: #50a0ff;
+  color: white;
+}
+
+.refineText{
+  width: 100%;
+  color: white;
+  background: rgba(100,100,100,0.4);
+  backdrop-filter: blur(10px);
+  padding: 5px;
+  outline: none;
+  border: none;
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #888; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #f1f1f1; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #fff; 
+}

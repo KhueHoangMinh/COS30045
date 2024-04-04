@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>World Migration Project</title>
+  <meta charset="utf-8" />
+  <meta name="authors" content="Hoang Minh Khue, Le Tran Bao Kien"/>
+  <link rel="stylesheet" href="https://rawgit.com/Caged/d3-tip/master/examples/example-styles.css"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="./map.css" />
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://d3js.org/d3-path.v1.min.js"></script>
+  <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
+  <script src="./js/select-box-search-option/dist/js/jquery-searchbox.js"></script>
+</head>
+<body>
+  <h1 id="title">World Migration Project</h1>
+  <div class="container">
+    <p id="description">
+      Welcome to our interactive world migration data visualization website. 
+      <br/>
+      Through charts and maps, we hope to help you understand more about global
+      migration patterns and their relationship with migrants' life expectancy
+      and GDP. The visualizations show the
+      immigration and emigration data, migration flows between countries,
+      and the impact on migrants' quality of life. They suggest the correlation
+      between migration and life expectancy, as well as the economic through GDP analysis. 
+      Customize your exploration by filtering countries, and time periods to gain valuable insights into the
+      complex dynamics of international migration.
+    </p>
+  </div>
+  <div id="map-container" style="height: 800px">
+    <div id="search-container">
+        <select name="country-search" id="country-search">
+          <option value="">Search for a country!</option>
+        </select>
+    </div>
+    <div class="container-content" id="map-controls">
+      <div id="buttons">
+        <span>Controls:</span>
+        <div class="control-group">
+          <a class="button" onclick="clearArcs()">Reset data</a>
+          <a class="button" onclick="reset()">Reset map & data</a>
+        </div>
+        
+        <span>Migration type:</span>
+        <div class="control-group">
+          <a class="button" id="im-btn">Immigration</a>
+          <a class="button" id="em-btn">Emigration</a>
+        </div>
+
+        <span>Display related data:</span>
+        <div class="control-group" id="related-btns">
+        </div>
+      </div>
+      <span>Year:</span>
+      <div class="control-group" style="display: flex; gap: 10px">
+          <input id="slider" style="display: inline-block;" type="range" min="1995" max="2015" value="1990" step="5" />   
+          <span id="range" class="labelFont">1995</span>
+      </div>
+      <div class="control-group" id="color-range"></div>
+      <span id="detail-migration-title">Migration details:</span>
+      <div id="detail-migration">
+        <div class="detail" id="detail-im">
+        </div>
+        <div class="detail" id="detail-em">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <label id="detailChartTitle">The circle's radius represents total migrants, and its color denotes immigrant/emigrant ratio.</label>
+    <div id="detail1"></div>
+    <p id="detail1-title">Detail chart title</p>
+  </div>
+  <footer>
+    <p class="container-content">Hoang Minh khue - 104221423<br/>Le Tran Bao Kien - 104223584</p>
+  </footer>
+  <script src="./js/script.js"></script>
+</body>
+</html>
