@@ -7,13 +7,13 @@ used = labels + years
 not_used = ['Destination', 'Numeric', 'Data Type', 'Total', 'Other North', 'Other South']
 
 # Read the manually processed data
-countries  = pd.read_csv('../raw_data/CountriesList.txt', delimiter=' , ', index_col='Country Code', engine='python')
-latlong = pd.read_csv('../raw_data/LatLong.csv', index_col='Alpha-3', engine='python', usecols=['Alpha-3', 'lat', 'long'])
-iso_codes = pd.read_csv('../raw_data/ISO_codes.csv', index_col='country-code')
-pop = pd.read_csv('../raw_data/Population.csv', index_col='Country Code', usecols=used)
-lifeExp = pd.read_csv('../raw_data/WB_LifeExpect.csv', index_col='Country Code', usecols=used)
-gdp = pd.read_csv('../raw_data/GDP.csv', index_col='Country Code', usecols=used)
-migrate_data = pd.read_excel('../raw_data/migrate_1995.xlsx', header=0)
+countries  = pd.read_csv('./raw_data/CountriesList.txt', delimiter=' , ', index_col='Country Code', engine='python')
+latlong = pd.read_csv('./raw_data/LatLong.csv', index_col='Alpha-3', engine='python', usecols=['Alpha-3', 'lat', 'long'])
+iso_codes = pd.read_csv('./raw_data/ISO_codes.csv', index_col='country-code')
+pop = pd.read_csv('./raw_data/Population.csv', index_col='Country Code', usecols=used)
+lifeExp = pd.read_csv('./raw_data/WB_LifeExpect.csv', index_col='Country Code', usecols=used)
+gdp = pd.read_csv('./raw_data/GDP.csv', index_col='Country Code', usecols=used)
+migrate_data = pd.read_excel('./raw_data/migrate_1995.xlsx', header=0)
 
 countries_dict = countries.to_dict()
 countries_list = countries.index.tolist()
@@ -42,7 +42,7 @@ def scale(value, max_val):
     return ((value * (10 - 0.2)) / max_val) + 0.2
 
 def cal_migration(year):
-    migration = pd.read_excel('../raw_data/Migrate_' + year + '.xlsx', header=0)
+    migration = pd.read_excel('./raw_data/Migrate_' + year + '.xlsx', header=0)
 
     migration = migration.query('Numeric < 900 and Numeric != 830')
     migration['Country Code'] = iso_codes.loc[migration['Numeric'], 'alpha-3'].values
@@ -137,10 +137,10 @@ for year in years:
 
 gdp_per_cap.rename(columns={'Country Name': 'name'}, inplace=True)
 
-with open('../processed_data/immigrant.json', 'w') as out: json.dump(im_lines, out, indent=2)
-with open('../processed_data/emigrant.json', 'w') as out: json.dump(em_lines, out, indent=2)
-with open('../processed_data/countries.json', 'w') as out: json.dump(countries_dict['Country Name'], out, indent=2)
-gdp_per_cap.fillna(0).to_csv('../processed_data/GDP.csv', index_label='id')
-lifeExp.to_csv('../processed_data/LifeExpectancy.csv', index_label='id')
-total_stock.to_csv('../processed_data/RawTotalMigrants.csv', index_label='id')
-im_frac.to_csv('../processed_data/NetTotalRatio.csv', index_label='id')
+with open('./processed_data/immigrant.json', 'w') as out: json.dump(im_lines, out, indent=2)
+with open('./processed_data/emigrant.json', 'w') as out: json.dump(em_lines, out, indent=2)
+with open('./processed_data/countries.json', 'w') as out: json.dump(countries_dict['Country Name'], out, indent=2)
+gdp_per_cap.fillna(0).to_csv('./processed_data/GDP.csv', index_label='id')
+lifeExp.to_csv('./processed_data/LifeExpectancy.csv', index_label='id')
+total_stock.to_csv('./processed_data/RawTotalMigrants.csv', index_label='id')
+im_frac.to_csv('./processed_data/NetTotalRatio.csv', index_label='id')
