@@ -5,6 +5,7 @@ var current_country = "";
 var current_factor = 'gdp';  
 var current_pos = [0,0]
 var reset_pos = false
+var autoToggle = true
 var allData = {};
 var years = ['1995', '2000', '2005', '2010', '2015']; 
 var year = 1995;
@@ -89,7 +90,7 @@ function loadAllData(error, gdp, life, rawtotal, imfrac, im, em, countriesData) 
 
 var yearDisplay = $('#range')
 
-$("#slider").on("change", function change(e) {
+$("#slider").on("change", (e) => {
   year = e.target.value;
   yearDisplay.html(year)
   updateMaps();
@@ -98,6 +99,20 @@ $("#slider").on("change", function change(e) {
     loadDetailChart()
   }
 });
+
+
+var autoToggleBtn = $('#auto-toggle')
+
+autoToggleBtn.on('click', () => {
+  autoToggle = !autoToggle
+  if(autoToggle) {
+    autoToggleBtn.html("Auto Toggle: On")
+    autoToggleBtn.attr("class", "button active")
+  } else {
+    autoToggleBtn.html("Auto Toggle: Off")
+    autoToggleBtn.attr("class", "button")
+  }
+})
 
 // Adding basic elements
 const body = d3.select('body');
@@ -168,7 +183,6 @@ var factorBtn1 = buttons
     if(current_country) loadDetailChart()
   });
 
-
 var factorBtn2 = buttons
   .append('a')
   .text('Life Expectancy')
@@ -184,10 +198,11 @@ var factorBtn2 = buttons
 updateBtns()
 
 // Config for world map creation
+const center = [4.5/8 * window.innerWidth, height*1.2/2]
 const projection = d3
   .geoNaturalEarth1()
   .scale(300)
-  .translate([4.5/8 * window.innerWidth, height*1.2/2]);
+  .translate(center);
 const pathGenerator = d3.geoPath().projection(projection);
 
 const worldMapDiasplay = svg.append('g');
@@ -334,7 +349,7 @@ const countryTip = d3
       }
       return `
         <h4> 
-          ${d.properties.formal_en.toLocaleString('en')}
+          ${d.properties.formal_en}
         </h4>
         <br/>
         <span>
@@ -346,11 +361,12 @@ const countryTip = d3
 
 // Create world map
 d3.json('./data/processed_data/world_map.json').then((data) => {
-  let features = data.features;
+  let countries_shape = data.features;
+  console.log(data)
 
   map
     .selectAll('path')
-    .data(features)
+    .data(countries_shape)
     .enter()
     .append('path')
     .attr('class', 'map')
@@ -438,20 +454,30 @@ function drawArcs(country) {
   // Remove all old arcs
   clearArcs()
 
+  var arcs = []
+  var color = "white"
+  if(type == "immigrant") {
+    arcs = im_arcs[year][country]  
+    if(reset_pos) {
+      reset_pos = false
+      current_pos = projection([arcs[0].destination.longitude, arcs[0].destination.latitude])
+    }
+    color = '130,130,255'
+  } else if(type == "emigrant") {
+    arcs = em_arcs[year][country]
+    if(reset_pos) {
+      reset_pos = false
+      current_pos = projection([arcs[0].origin.longitude, arcs[0].origin.latitude])
+    }
+    color = '255,130,130'
+  }
+
+  if(autoToggle) svg.transition().duration(1500).call(zoom.transform, d3.zoomIdentity.translate(center[0] - current_pos[0],center[1] - current_pos[1]));
+
   // Set time out to wait for clearArcs to finish its animation
   setTimeout(()=> {
 
     lines.selectAll('.line').remove();
-
-    var arcs = []
-    var color = "white"
-    if(type == "immigrant") {
-      arcs = im_arcs[year][country]
-      color = '130,130,255'
-    } else if(type == "emigrant") {
-      arcs = em_arcs[year][country]
-      color = '255,130,130'
-    }
 
     let displayLines = lines
       .selectAll('.line')
@@ -544,16 +570,6 @@ function drawArcs(country) {
 
 // Draw a single arc between the origin and destination
 function drawArc(path, origin, end) {
-  if(reset_pos) {
-    reset_pos = false
-    switch(type) {
-      case "immigrant":
-        current_pos = end
-        break
-      case "emigrant":
-        current_pos = origin
-    }
-  }
   path.moveTo(origin[0], origin[1]);
   path.quadraticCurveTo((origin[0] + end[0])/2, (origin[1] + end[1])/2 - (Math.abs(end[0]-origin[0]) + Math.abs(end[1]-origin[1]))/3, end[0], end[1] - 1);
   return path;
