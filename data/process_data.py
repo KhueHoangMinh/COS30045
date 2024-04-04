@@ -115,8 +115,6 @@ for year in years:
     im_lines[year] = mig_lines(immigrants[year], 'im', 1000, maxs[year])
     em_lines[year] = mig_lines(emigrants[year], 'em', 1000, maxs[year])
 
-
-for year in years:
     positive_stock[year] = immigrants[year].fillna(0.0).sum(axis=0)
     negative_stock[year] = emigrants[year].fillna(0.0).sum(axis=0)
 
