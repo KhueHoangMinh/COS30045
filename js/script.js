@@ -139,8 +139,8 @@ var canvasHeight = detail1.node().getBoundingClientRect().height;
 var margin = {
     top: 50,
     bottom: 50,
-    left: 75,
-    right: 75
+    left: 150,
+    right: 150
 };
 
 var y = d3.scaleLinear().range([canvasHeight - margin.top, margin.bottom]);
@@ -638,7 +638,24 @@ function loadDetailChart() {
                         
   detailChartTitle.innerHTML = "Showing data for country: " + current_country + ", for factor: " + current_factor;
 
-  x.domain(["Immigrants", "Selected Country", "Emigrants"])
+  var labelKey = ""
+  var labelUnit = ""
+
+  switch(current_factor) {
+    case "gdp":
+      labelKey = "GDP per capita"
+      labelUnit = "USD"
+      break
+    case "life":
+      labelKey = "Life expectancy"
+      labelUnit = "Years"
+      break
+  }
+
+  var labelLeft = `${labelKey} of Immigrants (${labelUnit})`
+  var labelRight = `${labelKey} of Emigrants (${labelUnit})`
+
+  x.domain([labelLeft, "Selected Country", labelRight])
   var datamin, datamax;
 
   var plotfactor = ""
@@ -661,7 +678,7 @@ function loadDetailChart() {
   im_arcs[year][current_country].forEach(function (arc) {
       im_lines.push({
         'endpts': [
-          {x: "Immigrants", y: plotdata[arc.id]},
+          {x: labelLeft, y: plotdata[arc.id]},
           {x: "Selected Country", y: circle_y}
         ],
         'stroke-width': arc['scaledValue']
@@ -673,7 +690,7 @@ function loadDetailChart() {
       em_lines.push({
         'endpts': [
           {x: "Selected Country", y: circle_y},
-          {x: "Emigrants", y: plotdata[arc.id]}
+          {x: labelRight, y: plotdata[arc.id]}
         ],
         'stroke-width': arc['scaledValue']
       })
