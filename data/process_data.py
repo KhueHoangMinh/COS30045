@@ -1,22 +1,20 @@
 import pandas as pd
 import json
 
-# Define constants
 labels = ['Country Name', 'Country Code']
 years = ['1995', '2000', '2005', '2010', '2015']
 used = labels + years
 not_used = ['Destination', 'Numeric', 'Data Type', 'Total', 'Other North', 'Other South']
 
 # Read the manually processed data
-countries  = pd.read_csv('./raw_data/CountriesList.txt', delimiter=' , ', index_col='Country Code', engine='python')
 latlong = pd.read_csv('./raw_data/LatLong.csv', index_col='Alpha-3', engine='python', usecols=['Alpha-3', 'lat', 'long'])
-iso_codes = pd.read_csv('./raw_data/ISO_codes.csv', index_col='country-code')
+countries = pd.read_csv('./raw_data/ISO_codes.csv', index_col='alpha-3')
+countries_by_code = pd.read_csv('./raw_data/ISO_codes.csv', index_col='country-code')
 pop = pd.read_csv('./raw_data/Population.csv', index_col='Country Code', usecols=used)
 lifeExp = pd.read_csv('./raw_data/WB_LifeExpect.csv', index_col='Country Code', usecols=used)
 gdp = pd.read_csv('./raw_data/GDP.csv', index_col='Country Code', usecols=used)
 migrate_data = pd.read_excel('./raw_data/migrate_1995.xlsx', header=0)
 
-# Initialise variables to store read data and results
 countries_dict = countries.to_dict()
 countries_list = countries.index.tolist()
 latlong_list = latlong.index.tolist()
@@ -39,18 +37,15 @@ net_stock = pd.DataFrame(0.0, index=pop.index, columns=years)
 total_stock = pd.DataFrame(0.0, index=pop.index, columns=years)
 im_frac = pd.DataFrame(0.0, index=pop.index, columns=years)
 
-# Reusable functions
 
-# Scale value for easier drawing
 def scale(value, max_val):
     return ((value * (10 - 0.2)) / max_val) + 0.2
 
-# Calculate migration data for each defined year
 def cal_migration(year):
     migration = pd.read_excel('./raw_data/Migrate_' + year + '.xlsx', header=0)
 
     migration = migration.query('Numeric < 900 and Numeric != 830')
-    migration['Country Code'] = iso_codes.loc[migration['Numeric'], 'alpha-3'].values
+    migration['Country Code'] = countries_by_code.loc[migration['Numeric'], 'alpha-3'].values
     migration.set_index('Country Code', inplace=True)
     migration_shared_index = migration.index.intersection(pop[year].dropna().index)
     migration = migration.reindex(migration_shared_index)
@@ -71,7 +66,6 @@ def cal_migration(year):
 
     return migration.drop(new_not_used, axis=1)
 
-# Calculate the origin and end of a migration
 def mig_line(origin, destination, status, value, scaledValue):
     d = dict()
     d['origin'] = {'latitude': latlong.loc[origin]['lat'],
@@ -82,26 +76,27 @@ def mig_line(origin, destination, status, value, scaledValue):
     d['scaledValue'] = scaledValue
     if status == 'im':
         d['id'] = origin
-        d['name'] = countries_dict['Country Name'][origin]
+        d['name'] = countries_dict['name'][origin]
     elif status == 'em':
         d['id'] = destination
-        d['name'] = countries_dict['Country Name'][destination]
+        d['name'] = countries_dict['name'][destination]
     return d
 
-# Process each row in the migration data file
+
 def mig_row(row_name, row, status, max_val):
     if status == 'im':
-        # Target is destination for immigration
+        # for immigration, row_name = destination
         l = [mig_line(origin, row_name, status, value, scale(value,max_val)) for origin, value in row.items()]
     elif status == 'em':
-        # Target is origin for emigration
+        # for emigration, row_name = origin
         l = [mig_line(row_name, destination, status, value,  scale(value,max_val)) for destination, value in row.items()]
     return l
 
 
-# Filter out the insignificant data
+# threshold: we only count arcs where (num_people > threshold)
 def mig_lines(migration, status, threshold, maximum):
     assert status in ['im', 'em']
+    # second parameter of Scaler sets the range for strokeWidth
     d = {}
     if status == 'im':
         for code, row in migration.iterrows():
@@ -112,7 +107,7 @@ def mig_lines(migration, status, threshold, maximum):
 
     return d
 
-# Process data for each defined year
+
 for year in years:
     immigrants[year] = cal_migration(year)
     maxs[year] = immigrants[year].max().max()
@@ -129,7 +124,6 @@ for year in years:
     im_frac[year] = net_stock[year] / total_stock[year]
 
 lifeExp = lifeExp.reindex(lifeExp.index.intersection(shared_index))
-lifeExp.drop('SRB', inplace=True)
 
 pop = pop.reindex(pop.index.intersection(countries.index))
 gdp = gdp.reindex(pop.index.intersection(pop.index))
@@ -140,10 +134,9 @@ for year in years:
 
 gdp_per_cap.rename(columns={'Country Name': 'name'}, inplace=True)
 
-# Write to processed files to use in javascript
 with open('./processed_data/immigrant.json', 'w') as out: json.dump(im_lines, out, indent=2)
 with open('./processed_data/emigrant.json', 'w') as out: json.dump(em_lines, out, indent=2)
-with open('./processed_data/countries.json', 'w') as out: json.dump(countries_dict['Country Name'], out, indent=2)
+with open('./processed_data/countries.json', 'w') as out: json.dump(countries_dict['name'], out, indent=2)
 gdp_per_cap.fillna(0).to_csv('./processed_data/GDP.csv', index_label='id')
 lifeExp.to_csv('./processed_data/LifeExpectancy.csv', index_label='id')
 total_stock.to_csv('./processed_data/RawTotalMigrants.csv', index_label='id')
